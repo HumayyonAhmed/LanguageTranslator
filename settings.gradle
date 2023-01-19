@@ -1,0 +1,3 @@
+rootProject.name = 'Language Translator'
+
+include ':app'

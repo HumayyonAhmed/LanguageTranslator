@@ -1,0 +1,90 @@
+[
+    {
+        "merged": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\build\\intermediates\\res\\merged\\debug\\layout_activity_translate_main.xml.flat",
+        "source": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\src\\main\\res\\layout\\activity_translate_main.xml"
+    },
+    {
+        "merged": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\build\\intermediates\\res\\merged\\debug\\layout_camera_fragment.xml.flat",
+        "source": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\src\\main\\res\\layout\\camera_fragment.xml"
+    },
+    {
+        "merged": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\build\\intermediates\\res\\merged\\debug\\drawable_ic_outline_photo_camera_24.xml.flat",
+        "source": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\src\\main\\res\\drawable\\ic_outline_photo_camera_24.xml"
+    },
+    {
+        "merged": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\build\\intermediates\\res\\merged\\debug\\drawable_ic_baseline_share_24.xml.flat",
+        "source": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\src\\main\\res\\drawable\\ic_baseline_share_24.xml"
+    },
+    {
+        "merged": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\build\\intermediates\\res\\merged\\debug\\drawable_actionbuttons.xml.flat",
+        "source": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\src\\main\\res\\drawable\\actionbuttons.xml"
+    },
+    {
+        "merged": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\build\\intermediates\\res\\merged\\debug\\menu_menu.xml.flat",
+        "source": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\src\\main\\res\\menu\\menu.xml"
+    },
+    {
+        "merged": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\build\\intermediates\\res\\merged\\debug\\drawable_ic_baseline_volume_up_24.xml.flat",
+        "source": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\src\\main\\res\\drawable\\ic_baseline_volume_up_24.xml"
+    },
+    {
+        "merged": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\build\\intermediates\\res\\merged\\debug\\drawable_ic_file_download_white_24dp.xml.flat",
+        "source": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\src\\main\\res\\drawable\\ic_file_download_white_24dp.xml"
+    },
+    {
+        "merged": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\build\\intermediates\\res\\merged\\debug\\drawable_ic_compare_arrows_black_24dp.xml.flat",
+        "source": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\src\\main\\res\\drawable\\ic_compare_arrows_black_24dp.xml"
+    },
+    {
+        "merged": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\build\\intermediates\\res\\merged\\debug\\drawable_ic_baseline_delete_outline_24.xml.flat",
+        "source": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\src\\main\\res\\drawable\\ic_baseline_delete_outline_24.xml"
+    },
+    {
+        "merged": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\build\\intermediates\\res\\merged\\debug\\drawable_ic_baseline_favorite_border_24.xml.flat",
+        "source": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\src\\main\\res\\drawable\\ic_baseline_favorite_border_24.xml"
+    },
+    {
+        "merged": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\build\\intermediates\\res\\merged\\debug\\drawable_ic_translate.xml.flat",
+        "source": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\src\\main\\res\\drawable\\ic_translate.xml"
+    },
+    {
+        "merged": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\build\\intermediates\\res\\merged\\debug\\layout_translate_fragment.xml.flat",
+        "source": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\src\\main\\res\\layout\\translate_fragment.xml"
+    },
+    {
+        "merged": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\build\\intermediates\\res\\merged\\debug\\drawable_ic_baseline_delete_24.xml.flat",
+        "source": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\src\\main\\res\\drawable\\ic_baseline_delete_24.xml"
+    },
+    {
+        "merged": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\build\\intermediates\\res\\merged\\debug\\drawable_textoutput.xml.flat",
+        "source": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\src\\main\\res\\drawable\\textoutput.xml"
+    },
+    {
+        "merged": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\build\\intermediates\\res\\merged\\debug\\drawable_ic_baseline_people_alt_24.xml.flat",
+        "source": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\src\\main\\res\\drawable\\ic_baseline_people_alt_24.xml"
+    },
+    {
+        "merged": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\build\\intermediates\\res\\merged\\debug\\drawable_ic_baseline_mic_24.xml.flat",
+        "source": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\src\\main\\res\\drawable\\ic_baseline_mic_24.xml"
+    },
+    {
+        "merged": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\build\\intermediates\\res\\merged\\debug\\drawable_logo_mlkit.xml.flat",
+        "source": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\src\\main\\res\\drawable\\logo_mlkit.xml"
+    },
+    {
+        "merged": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\build\\intermediates\\res\\merged\\debug\\drawable_ic_baseline_translate_32.xml.flat",
+        "source": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\src\\main\\res\\drawable\\ic_baseline_translate_32.xml"
+    },
+    {
+        "merged": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\build\\intermediates\\res\\merged\\debug\\layout_mic_fragment.xml.flat",
+        "source": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\src\\main\\res\\layout\\mic_fragment.xml"
+    },
+    {
+        "merged": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\build\\intermediates\\res\\merged\\debug\\drawable_ic_baseline_content_copy_24.xml.flat",
+        "source": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\src\\main\\res\\drawable\\ic_baseline_content_copy_24.xml"
+    },
+    {
+        "merged": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\build\\intermediates\\res\\merged\\debug\\layout_communicate_fragment.xml.flat",
+        "source": "D:\\Uni\\FYP\\FYP2\\Translator Project\\app\\src\\main\\res\\layout\\communicate_fragment.xml"
+    }
+]
