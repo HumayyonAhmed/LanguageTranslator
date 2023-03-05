@@ -71,7 +71,9 @@ class TranslateViewModel(application: Application) : AndroidViewModel(applicatio
   val availableModels = MutableLiveData<List<String>>()
 
   // Gets a list of all available translation languages.
-  val availableLanguages: List<Language> = TranslateLanguage.getAllLanguages().map { Language(it) }
+  val availableLanguages: List<Language> = TranslateLanguage.getAllLanguages().filter{item->
+    item.substring(0,2)=="ur" || item.substring(0,2) =="ar" || item.substring(0,2)=="en"
+  }.map {Language(it)}
 
   init {
     // Create a translation result or error object.
@@ -197,7 +199,7 @@ class TranslateViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     override fun toString(): String {
-      return "$code - $displayName"
+      return "$displayName"
     }
 
     override fun compareTo(other: Language): Int {

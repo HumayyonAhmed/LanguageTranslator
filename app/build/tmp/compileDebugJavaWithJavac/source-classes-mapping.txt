@@ -1,2 +1,16 @@
+com/languagetranslator/translate/databinding/MicFragmentBinding.java
+ com.languagetranslator.translate.databinding.MicFragmentBinding
+com/languagetranslator/translate/databinding/SpinnerLayoutBinding.java
+ com.languagetranslator.translate.databinding.SpinnerLayoutBinding
+com/languagetranslator/translate/databinding/CameraFragmentBinding.java
+ com.languagetranslator.translate.databinding.CameraFragmentBinding
+com/languagetranslator/translate/databinding/ActivityTranslateMainBinding.java
+ com.languagetranslator.translate.databinding.ActivityTranslateMainBinding
+com/languagetranslator/translate/databinding/ToolbarBinding.java
+ com.languagetranslator.translate.databinding.ToolbarBinding
+com/languagetranslator/translate/databinding/TranslateFragmentBinding.java
+ com.languagetranslator.translate.databinding.TranslateFragmentBinding
 com/languagetranslator/translate/BuildConfig.java
  com.languagetranslator.translate.BuildConfig
+com/languagetranslator/translate/databinding/CommunicateFragmentBinding.java
+ com.languagetranslator.translate.databinding.CommunicateFragmentBinding

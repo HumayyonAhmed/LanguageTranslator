@@ -320,7 +320,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/delete_outline/baseline_delete_outline_24.xml" />
+                                      <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/history/baseline_history_24.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -331,8 +331,8 @@
                         <option name="values">
                           <map>
                             <entry key="color" value="666666" />
-                            <entry key="outputName" value="ic_baseline_delete_outline_24" />
-                            <entry key="sourceFile" value="C:\Users\Dell\Downloads\mlkit-master\mlkit-master\android\translate" />
+                            <entry key="outputName" value="ic_baseline_history_24" />
+                            <entry key="sourceFile" value="C:\Users\Dell\Downloads\Android Vector Drawable (Community)\Icon\btn_bg.svg" />
                           </map>
                         </option>
                       </PersistentState>
