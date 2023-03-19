@@ -21,6 +21,7 @@ import android.widget.ArrayAdapter
 import android.widget.CompoundButton
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProviders
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.communicate_fragment.*
 import kotlinx.android.synthetic.main.communicate_fragment.buttonSwitchLang
 import kotlinx.android.synthetic.main.communicate_fragment.sourceLangSelector
@@ -38,7 +39,7 @@ class CommunicateFragment : Fragment() {
     private lateinit var tts: TextToSpeech
     val handler = Handler()
     private val LOG_TAG = "VoiceRecognitionAct"
-    private val speechRecognizer by lazy { SpeechRecognizer.createSpeechRecognizer(context!!) }
+    private val speechRecognizer by lazy { SpeechRecognizer.createSpeechRecognizer(requireActivity()) }
     private lateinit var recognizerIntent: Intent
     var audioPath = ""
     private lateinit var srcLang: String
@@ -63,15 +64,17 @@ class CommunicateFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         startSpeechRecognition()
 
+        activity?.findViewById<TextView>(R.id.title)?.text = "Communicate"
+        activity?.findViewById<BottomNavigationView>(R.id.nav)?.visibility  = View.VISIBLE
         val viewModel = ViewModelProviders.of(this).get(
             TranslateViewModel::class.java
         )
         val adapter = ArrayAdapter(
-            context!!,
+            requireActivity(),
             R.layout.spinner_layout, viewModel.availableLanguages
         )
 
-        tts = TextToSpeech(context!!, TextToSpeech.OnInitListener { status ->
+        tts = TextToSpeech(requireActivity(), TextToSpeech.OnInitListener { status ->
             if (status == TextToSpeech.SUCCESS) {
                 Log.i("TTS", "Successfully initialized")
             } else {
@@ -230,7 +233,7 @@ class CommunicateFragment : Fragment() {
         viewModel.availableModels.observe(
             viewLifecycleOwner
         ) { translateRemoteModels ->
-            val output = context!!.getString(
+            val output = requireActivity().getString(
                 R.string.downloaded_models_label,
                 translateRemoteModels
             )
@@ -340,7 +343,7 @@ class CommunicateFragment : Fragment() {
     }
 
     private fun setProgressText(tv: TextView) {
-        tv.text = context!!.getString(R.string.translate_progress)
+        tv.text = requireActivity().getString(R.string.translate_progress)
     }
     companion object {
         fun newInstance(): CommunicateFragment {

@@ -18,9 +18,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
@@ -56,6 +58,8 @@ class CameraFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        activity?.findViewById<TextView>(R.id.title)?.text = "Camera Input"
+        activity?.findViewById<BottomNavigationView>(R.id.nav)?.visibility  = View.VISIBLE
         captureButton.setOnClickListener {
             captureImage()
         }
@@ -70,7 +74,7 @@ class CameraFragment : Fragment() {
 
         val uri: Uri
         uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) // 2
-            FileProvider.getUriForFile(activity!!,
+            FileProvider.getUriForFile(requireActivity(),
                 "com.languagetranslator.translate.provider",
                 file
             ) else Uri.fromFile(file) // 3
@@ -144,23 +148,20 @@ class CameraFragment : Fragment() {
         recognizer.process(image)
             .addOnSuccessListener { visionText ->
                 val text = visionText.text
-                listener?.onDataReceived(text)
+                listener?.onDataReceived(text, "en", "ur")
             }
             .addOnFailureListener { e ->
                 Log.i("ERrrorororrrrrrrrrrrrr", e.toString())
             }
     }
     companion object {
-        private const val CROP_REQUEST_CODE = 3
         private const val CAMERA_REQUEST_CODE = 101
         private const val GALLERY_REQUEST_CODE = 200
-        private const val PERMISSIONS_REQUEST_CAMERA = 300
-        private const val CROP_IMAGE_ACTIVITY_REQUEST_CODE = 230
         fun newInstance(): CameraFragment {
             return CameraFragment()
         }
     }
 }
 interface DataListener {
-    fun onDataReceived(data: String)
+    fun onDataReceived(data: String, srcLang: String, targetLang: String)
 }

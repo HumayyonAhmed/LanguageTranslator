@@ -15,6 +15,7 @@
  */
 package com.languagetranslator.translate
 
+import HistoryData
 import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -43,11 +44,15 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_translate_main.*
 import kotlinx.android.synthetic.main.toolbar.*
 import kotlinx.android.synthetic.main.translate_fragment.*
 import java.io.File
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.util.*
 
 
@@ -58,7 +63,7 @@ class TranslateFragment : Fragment() {
   private lateinit var tts: TextToSpeech
   val handler = Handler()
   private val LOG_TAG = "VoiceRecognitionAct"
-  private val speechRecognizer by lazy { SpeechRecognizer.createSpeechRecognizer(context!!) }
+  private val speechRecognizer by lazy { SpeechRecognizer.createSpeechRecognizer(requireContext()) }
   private lateinit var recognizerIntent: Intent
   var audioPath = ""
 
@@ -81,16 +86,17 @@ class TranslateFragment : Fragment() {
     startSpeechRecognition()
 
     targetText.movementMethod = ScrollingMovementMethod()
-    if(arguments?.getBoolean(MIC_INPUT.toString()) == true)
-    {
+    if (arguments?.getBoolean(MIC_INPUT.toString()) == true) {
+      activity?.findViewById<TextView>(R.id.title)?.text = "Voice Input"
       toggleButton1.visibility = View.VISIBLE
       outputText.visibility = View.GONE
-    }
-    else{
+    } else {
+      activity?.findViewById<TextView>(R.id.title)?.text = "Welcome"
       waves.visibility = View.GONE
       toggleButton1.visibility = View.GONE
       outputText.visibility = View.VISIBLE
     }
+    activity?.findViewById<BottomNavigationView>(R.id.nav)?.visibility = View.VISIBLE
     val switchButton = view.findViewById<Button>(R.id.buttonSwitchLang)
 //    val sourceSyncButton = view.findViewById<ToggleButton>(R.id.buttonSyncSource)
 //    val targetSyncButton = view.findViewById<ToggleButton>(R.id.buttonSyncTarget)
@@ -109,11 +115,11 @@ class TranslateFragment : Fragment() {
     // Get available language list and set up source and target language spinners
     // with default selections.
     val adapter = ArrayAdapter(
-      context!!,
+      requireContext(),
       R.layout.spinner_layout, viewModel.availableLanguages
     )
 
-    tts = TextToSpeech(context!!, TextToSpeech.OnInitListener { status ->
+    tts = TextToSpeech(requireContext(), TextToSpeech.OnInitListener { status ->
       if (status == TextToSpeech.SUCCESS) {
         Log.i("TTS", "Successfully initialized")
       } else {
@@ -123,14 +129,18 @@ class TranslateFragment : Fragment() {
 
     sourceLangSelector.adapter = adapter
     targetLangSelector.adapter = adapter
-    registerForContextMenu(shareButton)
     sourceLangSelector.setSelection(adapter.getPosition(TranslateViewModel.Language("ur")))
     targetLangSelector.setSelection(adapter.getPosition(TranslateViewModel.Language("ar")))
+    registerForContextMenu(shareButton)
     recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-      putExtra(RecognizerIntent.EXTRA_LANGUAGE, adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0,2))
+      putExtra(
+        RecognizerIntent.EXTRA_LANGUAGE,
+        adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0, 2)
+      )
       putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
       putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
     }
+
     toggleButton1.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
       override fun onCheckedChanged(
         buttonView: CompoundButton?,
@@ -156,7 +166,10 @@ class TranslateFragment : Fragment() {
         setProgressText(targetTextView)
         viewModel.sourceLang.setValue(adapter.getItem(position))
         recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-          putExtra(RecognizerIntent.EXTRA_LANGUAGE, adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0,2))
+          putExtra(
+            RecognizerIntent.EXTRA_LANGUAGE,
+            adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0, 2)
+          )
           putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
           putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
         }
@@ -176,7 +189,10 @@ class TranslateFragment : Fragment() {
         setProgressText(targetTextView)
         viewModel.targetLang.setValue(adapter.getItem(position))
         recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-          putExtra(RecognizerIntent.EXTRA_LANGUAGE, adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0,2))
+          putExtra(
+            RecognizerIntent.EXTRA_LANGUAGE,
+            adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0, 2)
+          )
           putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
           putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
         }
@@ -198,7 +214,10 @@ class TranslateFragment : Fragment() {
       srcTextView.setText(targetText)
       viewModel.sourceText.setValue(targetText)
       recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-        putExtra(RecognizerIntent.EXTRA_LANGUAGE, adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0,2))
+        putExtra(
+          RecognizerIntent.EXTRA_LANGUAGE,
+          adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0, 2)
+        )
         putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
         putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
       }
@@ -220,39 +239,55 @@ class TranslateFragment : Fragment() {
 //        viewModel.deleteLanguage(language!!)
 //      }
 //    }
+    favBtn.setOnClickListener {
+      val database =
+        FirebaseDatabase.getInstance("https://languagetranslator-a722c-default-rtdb.firebaseio.com/")
+      val ref = database.getReference("user/history")
+      val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+      val favoriteTranslation = HistoryData(
+        adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0, 2)
+          .lowercase(Locale.ROOT),
+        adapter.getItem(targetLangSelector.selectedItemPosition).toString().substring(0, 2)
+          .lowercase(Locale.ROOT),
+        sourceText.text.toString(), targetTextView.text.toString(), sdf.format(Date()), true
+      )
+      ref.push().setValue(favoriteTranslation)
+      Toast.makeText(requireContext(), "Added to Favourites", Toast.LENGTH_SHORT).show()
+    }
     pauseBtn.setOnClickListener {
-      if(sourceText.text.toString()!="") {
+      if (sourceText.text.toString() != "") {
         pauseBtn.visibility = View.GONE
         speakButton.visibility = View.VISIBLE
       }
       tts.stop()
     }
-    speakButton.setOnClickListener{
-      if(sourceText.text.toString()!="") {
+    speakButton.setOnClickListener {
+      if (sourceText.text.toString() != "") {
         pauseBtn.visibility = View.VISIBLE
         speakButton.visibility = View.GONE
       }
 
-      val lang = adapter.getItem(targetLangSelector.selectedItemPosition).toString().substring(0,2);
+      val lang =
+        adapter.getItem(targetLangSelector.selectedItemPosition).toString().substring(0, 2);
       val text = targetTextView.text.toString()
       speak(text, lang)
     }
-    copyButton.setOnClickListener{
-      if(targetTextView.text.toString()!="") {
+    copyButton.setOnClickListener {
+      if (targetTextView.text.toString() != "") {
         val clipboard =
-          getSystemService(context!!, ClipboardManager::class.java) as ClipboardManager?
+          getSystemService(requireContext(), ClipboardManager::class.java) as ClipboardManager?
         val clip = ClipData.newPlainText("translated text", targetTextView.text.toString())
         clipboard!!.setPrimaryClip(clip)
         Toast.makeText(requireContext(), "Text copied to clipboard!", Toast.LENGTH_SHORT).show()
       }
     }
-    shareButton.setOnClickListener{
-      if(sourceText.text.toString()!="") {
-      activity?.openContextMenu(shareButton)
+    shareButton.setOnClickListener {
+      if (sourceText.text.toString() != "") {
+        activity?.openContextMenu(shareButton)
       }
 
     }
-    delButton.setOnClickListener{
+    delButton.setOnClickListener {
       sourceText.text?.clear()
     }
     tts.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
@@ -269,18 +304,19 @@ class TranslateFragment : Fragment() {
         TODO("Not yet implemented")
       }
 
-      override fun onError(utteranceId: String, errorCode: Int) {}
+      @Deprecated("Deprecated in Java")
+      override fun onError(utteranceId: String, errorCode: Int) {
+      }
     })
     // Translate input text as it is typed
     srcTextView.addTextChangedListener(object : TextWatcher {
       override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
       override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
       override fun afterTextChanged(s: Editable) {
-        if(arguments?.getBoolean(MIC_INPUT.toString()) == true) {
-          if(s.toString().trim()!="") {
+        if (arguments?.getBoolean(MIC_INPUT.toString()) == true) {
+          if (s.toString().trim() != "") {
             outputText.visibility = View.VISIBLE
-          }
-          else{
+          } else {
             outputText.visibility = View.GONE
           }
         }
@@ -303,7 +339,7 @@ class TranslateFragment : Fragment() {
     viewModel.availableModels.observe(
       viewLifecycleOwner,
       { translateRemoteModels ->
-        val output = context!!.getString(
+        val output = requireContext().getString(
           R.string.downloaded_models_label,
           translateRemoteModels
         )
@@ -317,17 +353,22 @@ class TranslateFragment : Fragment() {
 //          translateRemoteModels)
       }
     )
-    if (arguments != null) {
-      if(arguments!!.containsKey(INPUT_STRING)){
-        val argumentValue = arguments!!.getString(INPUT_STRING)
-        sourceLangSelector.setSelection(adapter.getPosition(TranslateViewModel.Language("en")))
-        targetLangSelector.setSelection(adapter.getPosition(TranslateViewModel.Language("ur")))
-        srcTextView.setText(argumentValue)
-      } else {
-        // Handle case where argument is not present
+    val bundle = arguments
+    if (bundle != null) {
+      val txt = bundle.getString("INPUT_STRING")
+      val src = bundle.getString("SRC_LANG")
+      val tar = bundle.getString("TAR_LANG")
+      if (txt != null && src != null && tar != null) {
+        Log.i("src", src)
+        Log.i("tar", tar)
+        Log.i("txt", txt)
+        sourceLangSelector.setSelection(adapter.getPosition(TranslateViewModel.Language(src)))
+        targetLangSelector.setSelection(adapter.getPosition(TranslateViewModel.Language(tar)))
+        srcTextView.setText(txt)
       }
     }
   }
+
   override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenu.ContextMenuInfo?) {
     super.onCreateContextMenu(menu, v, menuInfo)
     requireActivity().menuInflater.inflate(R.menu.context_menu, menu)
@@ -365,7 +406,7 @@ class TranslateFragment : Fragment() {
     shareIntent.type = "audio/*"
     val uri: Uri
     uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-      FileProvider.getUriForFile(activity!!,
+      FileProvider.getUriForFile(requireActivity(),
         "com.languagetranslator.translate.provider",
         file
       ) else Uri.fromFile(file)
@@ -374,11 +415,11 @@ class TranslateFragment : Fragment() {
     shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
     val chooser = Intent.createChooser(shareIntent, "Share TTS Output")
     val resInfoList: List<ResolveInfo> =
-      context!!.packageManager.queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY)
+      requireContext().packageManager.queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY)
 
     for (resolveInfo in resInfoList) {
       val packageName = resolveInfo.activityInfo.packageName
-      context!!.grantUriPermission(
+      requireContext().grantUriPermission(
         packageName,
         uri,
         Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -497,13 +538,14 @@ class TranslateFragment : Fragment() {
     return null
   }
   private fun setProgressText(tv: TextView) {
-    tv.text = context!!.getString(R.string.translate_progress)
+    tv.text = requireContext().getString(R.string.translate_progress)
   }
 
   companion object {
-    const val INPUT_STRING = ""
+    val SRC_LANG = null
+    val TAR_LANG = null
+    val INPUT_STRING = null
     const val MIC_INPUT = false
-    const val CAMERA_INPUT = false
     fun newInstance(): TranslateFragment {
       return TranslateFragment()
     }

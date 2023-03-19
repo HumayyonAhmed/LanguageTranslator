@@ -1,0 +1,76 @@
+{
+  "project_info": {
+    "project_number": "239684697699",
+    "project_id": "languagetranslator-a722c",
+    "storage_bucket": "languagetranslator-a722c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:239684697699:android:b3d7f95c5aaad6da968256",
+        "android_client_info": {
+          "package_name": "com.languagetranslator.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "239684697699-sd3pgthujn7j511djahkubhbqj3catnd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwOmh7i7fPQX_dwuV9vDEFPVbCga034EM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "239684697699-sd3pgthujn7j511djahkubhbqj3catnd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:239684697699:android:13413f23bbc8a1ff968256",
+        "android_client_info": {
+          "package_name": "com.languagetranslator.translate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "239684697699-lm87l47vbt4l068qfkjsgs1j83cf2ubh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.languagetranslator.translate",
+            "certificate_hash": "e328ae6994470750e918d7bb23f68b92b8bcbefd"
+          }
+        },
+        {
+          "client_id": "239684697699-sd3pgthujn7j511djahkubhbqj3catnd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwOmh7i7fPQX_dwuV9vDEFPVbCga034EM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "239684697699-sd3pgthujn7j511djahkubhbqj3catnd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardElevation="2dp"
+    app:cardUseCompatPadding="true"
+    app:cardCornerRadius="8dp"
+    android:id="@+id/cardView">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Source text -->
+        <TextView
+            android:id="@+id/source_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:textStyle="bold"/>
+
+        <!-- Translated text -->
+        <TextView
+            android:id="@+id/translated_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/source_text_view"
+            android:layout_marginTop="8dp"
+            android:textColor="#000000"
+            android:textSize="16sp"/>
+
+        <!-- Source language tag -->
+        <TextView
+            android:id="@+id/source_lang_tag_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/translated_text_view"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/tag_background"
+            android:paddingVertical="6dp"
+            android:paddingHorizontal="10dp"
+            android:textColor="#fff"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
+
+        <!-- Target language tag -->
+        <TextView
+            android:id="@+id/target_lang_tag_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/translated_text_view"
+            android:layout_toEndOf="@+id/source_lang_tag_view"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/tag_background"
+            android:paddingVertical="6dp"
+            android:paddingHorizontal="10dp"
+            android:textColor="#fff"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
+
+        <!-- Delete icon -->
+        <ImageView
+            android:id="@+id/delete_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/translated_text_view"
+            android:padding="8dp"
+            android:src="@drawable/ic_baseline_delete_24"/>
+
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

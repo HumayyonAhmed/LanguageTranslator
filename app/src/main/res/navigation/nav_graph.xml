@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/translateFragment">
+
+    <fragment
+        android:id="@+id/translateFragment"
+        android:name="com.languagetranslator.translate.TranslateFragment"
+        android:label="TranslateFragment" />
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="com.languagetranslator.translate.CameraFragment"
+        android:label="CameraFragment" />
+    <fragment
+        android:id="@+id/communicateFragment"
+        android:name="com.languagetranslator.translate.CommunicateFragment"
+        android:label="CommunicateFragment" />
+    <fragment
+        android:id="@+id/micFragment"
+        android:name="com.languagetranslator.translate.MicFragment"
+        android:label="MicFragment" />
+    <fragment
+        android:id="@+id/documentFragment"
+        android:name="com.languagetranslator.translate.DocumentFragment"
+        android:label="fragment_document"
+        tools:layout="@layout/fragment_document" />
+    <fragment
+        android:id="@+id/languagesFragment"
+        android:name="com.languagetranslator.translate.LanguagesFragment"
+        android:label="fragment_languages"
+        tools:layout="@layout/fragment_languages" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.languagetranslator.translate.SettingsFragment"
+        android:label="SettingsFragment" />
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.languagetranslator.translate.HistoryFragment"
+        android:label="HistoryFragment" />
+</navigation>

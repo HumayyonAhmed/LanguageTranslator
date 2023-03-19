@@ -17,16 +17,25 @@
 package com.languagetranslator.translate
 
 import android.Manifest
+import android.app.Activity
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavHostController
+import androidx.navigation.Navigation
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_translate_main.*
+import kotlinx.android.synthetic.main.activity_translate_main.view.*
 
 
 class MainActivity : AppCompatActivity(), DataListener {
@@ -41,38 +50,25 @@ class MainActivity : AppCompatActivity(), DataListener {
     if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
       ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 100)
     }
+    val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+    val navController = navHostFragment.navController
     val bottomnavigation = findViewById<BottomNavigationView>(R.id.nav)
-    if (savedInstanceState == null) {
-      findViewById<TextView>(R.id.title).text = "Welcome"
-      supportFragmentManager.beginTransaction()
-        .replace(
-          R.id.container,
-          TranslateFragment.newInstance()
-        )
-        .commitNow()
-    }
 
     bottomnavigation.setOnNavigationItemSelectedListener {
       when(it.itemId){
         R.id.translate -> {
-          findViewById<TextView>(R.id.title).text = "Translate"
-          makeFragment(TranslateFragment.newInstance())
+          navController.navigate(R.id.translateFragment)
         }
         R.id.camera -> {
-          findViewById<TextView>(R.id.title).text = "Image Input"
-          makeFragment(CameraFragment.newInstance())
+          navController.navigate(R.id.cameraFragment)
         }
         R.id.mic -> {
-          findViewById<TextView>(R.id.title).text = "Voice Input"
           val bundle = Bundle()
           bundle.putBoolean(TranslateFragment.MIC_INPUT.toString(), true)
-          val fragment = TranslateFragment.newInstance()
-          fragment.arguments = bundle
-          makeFragment(fragment)
+          navController.navigate(R.id.translateFragment, bundle)
         }
         R.id.communicate -> {
-          findViewById<TextView>(R.id.title).text = "Conversation"
-          makeFragment(CommunicateFragment.newInstance())
+          navController.navigate(R.id.communicateFragment)
         }
       }
       true
@@ -91,44 +87,49 @@ class MainActivity : AppCompatActivity(), DataListener {
     toggle.syncState()
 
     navigation_view.setNavigationItemSelectedListener { menuItem ->
+      bottomnavigation.visibility = View.GONE
       when (menuItem.itemId) {
-        R.id.saved_key_phrases -> {
-          // Handle Saved Key Phrases click
+        R.id.home_page -> {
+          navController.navigate(R.id.translateFragment)
           true
         }
-        R.id.downloaded_models -> {
-          // Handle Downloaded Models click
+        R.id.saved_key_phrases -> {
+          val bundle = Bundle()
+          bundle.putBoolean(HistoryFragment.Favourites.toString(), true)
+          navController.navigate(R.id.historyFragment, bundle)
           true
         }
         R.id.document_translation -> {
-          // Handle Document Translation click
+          navController.navigate(R.id.documentFragment)
           true
         }
         R.id.history -> {
-          // Handle History click
+          navController.navigate(R.id.historyFragment)
           true
         }
         R.id.settings -> {
-          // Handle Settings click
+          navController.navigate(R.id.settingsFragment)
           true
         }
         else -> false
       }
     }
   }
-  override fun onDataReceived(data: String) {
-    val bundle = Bundle()
-    bundle.putString(TranslateFragment.INPUT_STRING, data)
-    val fragment = TranslateFragment.newInstance()
-    fragment.arguments = bundle
-    makeFragment(fragment)
+  override fun onDataReceived(data: String, sourceLang: String, targetLang: String) {
+    val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+    val navController = navHostFragment.navController
+    var bundle = Bundle()
+    bundle.putString("INPUT_STRING", data)
+    bundle.putString("SRC_LANG", sourceLang)
+    bundle.putString("TAR_LANG", targetLang)
+    navController.navigate(R.id.translateFragment, bundle)
   }
-  private fun makeFragment(fragment: Fragment) {
-    supportFragmentManager.beginTransaction()
-      .replace(
-        R.id.container,
-        fragment
-      )
-      .commitNow()
-  }
+//  private fun makeFragment(fragment: Fragment) {
+//    supportFragmentManager.beginTransaction()
+//      .replace(
+//        R.id.container,
+//        fragment
+//      )
+//      .commitNow()
+//  }
 }
