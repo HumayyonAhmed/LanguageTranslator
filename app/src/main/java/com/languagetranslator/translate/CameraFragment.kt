@@ -26,9 +26,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import com.languagetranslator.translate.databinding.CameraFragmentBinding
 import com.yalantis.ucrop.UCrop
-import kotlinx.android.synthetic.main.camera_fragment.*
-import kotlinx.android.synthetic.main.toolbar.*
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
@@ -38,6 +37,9 @@ import java.io.InputStream
  * Fragment view for handling translations
  */
 class CameraFragment : Fragment() {
+    private var _binding: CameraFragmentBinding? = null
+    private val binding get() = _binding!!
+
     private var listener: DataListener? = null
     var currentPhotoPath = ""
 
@@ -51,7 +53,8 @@ class CameraFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        return inflater.inflate(R.layout.camera_fragment, container, false)
+        _binding = CameraFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -60,10 +63,10 @@ class CameraFragment : Fragment() {
 
         activity?.findViewById<TextView>(R.id.title)?.text = "Camera Input"
         activity?.findViewById<BottomNavigationView>(R.id.nav)?.visibility  = View.VISIBLE
-        captureButton.setOnClickListener {
+        binding.captureButton.setOnClickListener {
             captureImage()
         }
-        galleryButton.setOnClickListener {
+        binding.galleryButton.setOnClickListener {
             openGallery()
         }
 
@@ -98,6 +101,7 @@ class CameraFragment : Fragment() {
         recognizeText(bitmap)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {

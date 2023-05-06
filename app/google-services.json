@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "239684697699",
+    "firebase_url": "https://languagetranslator-a722c-default-rtdb.firebaseio.com",
     "project_id": "languagetranslator-a722c",
     "storage_bucket": "languagetranslator-a722c.appspot.com"
   },
@@ -14,7 +15,7 @@
       },
       "oauth_client": [
         {
-          "client_id": "239684697699-sd3pgthujn7j511djahkubhbqj3catnd.apps.googleusercontent.com",
+          "client_id": "239684697699-oap2o68r9ibl4nmspgufa1hg86pq63fj.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -27,7 +28,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "239684697699-sd3pgthujn7j511djahkubhbqj3catnd.apps.googleusercontent.com",
+              "client_id": "239684697699-oap2o68r9ibl4nmspgufa1hg86pq63fj.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
@@ -51,7 +52,7 @@
           }
         },
         {
-          "client_id": "239684697699-sd3pgthujn7j511djahkubhbqj3catnd.apps.googleusercontent.com",
+          "client_id": "239684697699-oap2o68r9ibl4nmspgufa1hg86pq63fj.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -64,7 +65,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "239684697699-sd3pgthujn7j511djahkubhbqj3catnd.apps.googleusercontent.com",
+              "client_id": "239684697699-oap2o68r9ibl4nmspgufa1hg86pq63fj.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

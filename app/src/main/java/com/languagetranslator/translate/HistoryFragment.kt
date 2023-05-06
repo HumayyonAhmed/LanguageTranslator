@@ -18,13 +18,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
-import kotlinx.android.synthetic.main.fragment_saved_phrases.*
-import kotlinx.android.synthetic.main.translate_fragment.*
+import com.languagetranslator.translate.databinding.CameraFragmentBinding
+import com.languagetranslator.translate.databinding.FragmentSavedPhrasesBinding
 
 class HistoryFragment : Fragment() {
-
+    private var _binding: FragmentSavedPhrasesBinding? = null
+    private val binding get() = _binding!!
     private var listener: DataListener? = null
     private lateinit var historyAdapter: FirebaseRecyclerAdapter<HistoryData, HistoryViewHolder>
 
@@ -36,7 +39,8 @@ class HistoryFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_saved_phrases, container, false)
+        _binding = FragmentSavedPhrasesBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onAttach(context: Context) {
@@ -51,8 +55,8 @@ class HistoryFragment : Fragment() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        progress_bar.visibility = View.VISIBLE
-        history_view.visibility = View.GONE
+        binding.progressBar.visibility = View.VISIBLE
+        binding.historyView.visibility = View.GONE
 
         if(arguments?.getBoolean(HistoryFragment.Favourites.toString()) == true)
         {
@@ -62,8 +66,10 @@ class HistoryFragment : Fragment() {
             activity?.findViewById<TextView>(R.id.title)?.text = "History"
         }
         // Get a reference to the "history" node
+        val account = GoogleSignIn.getLastSignedInAccount(context)
+        val googleId = account?.id
         val database = FirebaseDatabase.getInstance("https://languagetranslator-a722c-default-rtdb.firebaseio.com/")
-        val historyRef = database.getReference("user/history")
+        val historyRef = database.getReference("users/${googleId}/history")
 
         // Set up options for the FirebaseRecyclerAdapter
         var query: Query = historyRef.orderByChild("dateCreated")
@@ -102,11 +108,11 @@ class HistoryFragment : Fragment() {
                 }
             }
         }
-        history_view.adapter = historyAdapter
-        history_view.layoutManager = LinearLayoutManager(requireContext())
+        binding.historyView.adapter = historyAdapter
+        binding.historyView.layoutManager = LinearLayoutManager(requireContext())
 
-        progress_bar.visibility = View.GONE
-        history_view.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.GONE
+        binding.historyView.visibility = View.VISIBLE
     }
 
     override fun onStart() {

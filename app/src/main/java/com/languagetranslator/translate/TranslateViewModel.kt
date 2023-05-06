@@ -112,11 +112,11 @@ class TranslateViewModel(application: Application) : AndroidViewModel(applicatio
   }
 
   // Starts downloading a remote model for local translation.
-  internal fun downloadLanguage(language: Language) {
-    val model = getModel(TranslateLanguage.fromLanguageTag(language.code)!!)
+  internal fun downloadLanguage(code: String) {
+    val model = getModel(TranslateLanguage.fromLanguageTag(code)!!)
     var downloadTask: Task<Void>?
-    if (pendingDownloads.containsKey(language.code)) {
-      downloadTask = pendingDownloads[language.code]
+    if (pendingDownloads.containsKey(code)) {
+      downloadTask = pendingDownloads[code]
       // found existing task. exiting
       if (downloadTask != null && !downloadTask.isCanceled) {
         return
@@ -124,27 +124,27 @@ class TranslateViewModel(application: Application) : AndroidViewModel(applicatio
     }
     downloadTask =
       modelManager.download(model, DownloadConditions.Builder().build()).addOnCompleteListener {
-        pendingDownloads.remove(language.code)
+        pendingDownloads.remove(code)
         fetchDownloadedModels()
       }
-    pendingDownloads[language.code] = downloadTask
+    pendingDownloads[code] = downloadTask
   }
 
   // Returns if a new model download task should be started.
   fun requiresModelDownload(
-    lang: Language,
+    code: String,
     downloadedModels: List<String?>?,
   ): Boolean {
     return if (downloadedModels == null) {
       true
-    } else !downloadedModels.contains(lang.code) && !pendingDownloads.containsKey(lang.code)
+    } else !downloadedModels.contains(code) && !pendingDownloads.containsKey(code)
   }
 
   // Deletes a locally stored translation model.
-  internal fun deleteLanguage(language: Language) {
-    val model = getModel(TranslateLanguage.fromLanguageTag(language.code)!!)
+  internal fun deleteLanguage(code: String) {
+    val model = getModel(TranslateLanguage.fromLanguageTag(code)!!)
     modelManager.deleteDownloadedModel(model).addOnCompleteListener { fetchDownloadedModels() }
-    pendingDownloads.remove(language.code)
+    pendingDownloads.remove(code)
   }
 
   fun translate(): Task<String> {

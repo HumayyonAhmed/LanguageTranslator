@@ -17,32 +17,43 @@
 package com.languagetranslator.translate
 
 import android.Manifest
-import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
-import androidx.navigation.NavHostController
-import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.android.synthetic.main.activity_translate_main.*
-import kotlinx.android.synthetic.main.activity_translate_main.view.*
+import com.google.android.material.navigation.NavigationView
+import com.languagetranslator.translate.databinding.ActivityTranslateMainBinding
 
 
 class MainActivity : AppCompatActivity(), DataListener {
+  private lateinit var binding: ActivityTranslateMainBinding
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_translate_main)
+    binding = ActivityTranslateMainBinding.inflate(layoutInflater)
+    val view = binding.root
+    setContentView(view)
+
+    val navigationView = findViewById<NavigationView>(R.id.navigation_view)
+    val headerView = navigationView.getHeaderView(0)
+    val emailView = headerView.findViewById<TextView>(R.id.nav_header_email)
+    val nameView = headerView.findViewById<TextView>(R.id.nav_header_name)
+
+    val prefs = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+    val email = prefs.getString("email", null)
+    val username = prefs.getString("username", null)
+    if (email != null && username != null) {
+      emailView.text = email;
+      nameView.text = username;
+    }
 
     if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
       ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 1)
@@ -76,17 +87,17 @@ class MainActivity : AppCompatActivity(), DataListener {
 
     val toggle = ActionBarDrawerToggle(
       this,
-      drawer_layout,
-      toolbar,
+      binding.drawerLayout,
+      binding.toolbar,
       R.string.open_drawer,
       R.string.close_drawer
     )
 
 
-    drawer_layout.addDrawerListener(toggle)
+    binding.drawerLayout.addDrawerListener(toggle)
     toggle.syncState()
 
-    navigation_view.setNavigationItemSelectedListener { menuItem ->
+    binding.navigationView.setNavigationItemSelectedListener { menuItem ->
       bottomnavigation.visibility = View.GONE
       when (menuItem.itemId) {
         R.id.home_page -> {
@@ -111,6 +122,17 @@ class MainActivity : AppCompatActivity(), DataListener {
           navController.navigate(R.id.settingsFragment)
           true
         }
+        R.id.logout -> {
+          val prefs = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+          with(prefs.edit()) {
+            clear()
+            apply()
+          }
+          val intent = Intent(this, LoginActivity::class.java)
+          startActivity(intent)
+          finish()
+          true
+        }
         else -> false
       }
     }
@@ -124,12 +146,10 @@ class MainActivity : AppCompatActivity(), DataListener {
     bundle.putString("TAR_LANG", targetLang)
     navController.navigate(R.id.translateFragment, bundle)
   }
-//  private fun makeFragment(fragment: Fragment) {
-//    supportFragmentManager.beginTransaction()
-//      .replace(
-//        R.id.container,
-//        fragment
-//      )
-//      .commitNow()
-//  }
+
+  companion object {
+    var sourceLang: String? = null
+    var targetLang: String? = null
+    // Other companion object variables
+  }
 }

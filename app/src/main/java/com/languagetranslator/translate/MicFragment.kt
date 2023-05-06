@@ -12,21 +12,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.CompoundButton
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
-import kotlinx.android.synthetic.main.mic_fragment.*
-import kotlinx.android.synthetic.main.toolbar.*
+import com.languagetranslator.translate.databinding.MicFragmentBinding
 
 
 /***
  * Fragment view for handling translations
  */
 class MicFragment : Fragment() {
+    private var _binding: MicFragmentBinding? = null
+    private val binding get() = _binding!!
     private val REQUEST_CODE_SPEECH_INPUT = 100
     private val LOG_TAG = "VoiceRecognitionAct"
 
-    private val speechRecognizer by lazy { SpeechRecognizer.createSpeechRecognizer(context!!) }
+    private val speechRecognizer by lazy { SpeechRecognizer.createSpeechRecognizer(requireContext()) }
     private lateinit var recognizerIntent: Intent
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +39,8 @@ class MicFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        return inflater.inflate(R.layout.mic_fragment, container, false)
+        _binding = MicFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -50,31 +51,31 @@ class MicFragment : Fragment() {
             TranslateViewModel::class.java
         )
         val adapter = ArrayAdapter(
-            context!!,
+            requireContext(),
             R.layout.spinner_layout, viewModel.availableLanguages
         )
-        sourceLangSelector.adapter = adapter
-        targetLangSelector.adapter = adapter
-        sourceLangSelector.setSelection(adapter.getPosition(TranslateViewModel.Language("ur")))
-        targetLangSelector.setSelection(adapter.getPosition(TranslateViewModel.Language("ar")))
-        Log.i("Lang", adapter.getItem(targetLangSelector.selectedItemPosition).toString().substring(0,2))
+        binding.sourceLangSelector.adapter = adapter
+        binding.targetLangSelector.adapter = adapter
+        binding.sourceLangSelector.setSelection(adapter.getPosition(TranslateViewModel.Language("ur")))
+        binding.targetLangSelector.setSelection(adapter.getPosition(TranslateViewModel.Language("ar")))
+        Log.i("Lang", adapter.getItem(binding.targetLangSelector.selectedItemPosition).toString().substring(0,2))
         recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0,2))
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, adapter.getItem(binding.sourceLangSelector.selectedItemPosition).toString().substring(0,2))
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
             putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
         }
-        toggleButton1.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
+        binding.toggleButton1.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
             override fun onCheckedChanged(
                 buttonView: CompoundButton?,
                 isChecked: Boolean
             ) {
                 if (isChecked) {
-                    progressBar1.setVisibility(View.VISIBLE)
-                    progressBar1.setIndeterminate(true)
+                    binding.progressBar1.setVisibility(View.VISIBLE)
+                    binding.progressBar1.setIndeterminate(true)
                     speechRecognizer.startListening(recognizerIntent)
                 } else {
-                    progressBar1.setIndeterminate(false)
-                    progressBar1.setVisibility(View.INVISIBLE)
+                    binding.progressBar1.setIndeterminate(false)
+                    binding.progressBar1.setVisibility(View.INVISIBLE)
                     speechRecognizer.stopListening()
                 }
             }
@@ -97,9 +98,9 @@ class MicFragment : Fragment() {
 
             override fun onBeginningOfSpeech() {
                 Log.i(LOG_TAG, "onBeginningOfSpeech")
-                sourceText.setText("Listening")
-                progressBar1.setIndeterminate(false)
-                progressBar1.setMax(10)
+                binding.sourceText.setText("Listening")
+                binding.progressBar1.setIndeterminate(false)
+                binding.progressBar1.setMax(10)
             }
 
             override fun onBufferReceived(buffer: ByteArray) {
@@ -108,15 +109,15 @@ class MicFragment : Fragment() {
 
             override fun onEndOfSpeech() {
                 Log.i(LOG_TAG, "onEndOfSpeech")
-                progressBar1.setIndeterminate(true)
-                toggleButton1.setChecked(false)
+                binding.progressBar1.setIndeterminate(true)
+                binding.toggleButton1.setChecked(false)
             }
 
             override fun onError(errorCode: Int) {
                 val errorMessage = getErrorText(errorCode)
                 Log.d(LOG_TAG, "FAILED $errorMessage")
-                sourceText.setText("")
-                toggleButton1.setChecked(false)
+                binding.sourceText.setText("")
+                binding.toggleButton1.setChecked(false)
             }
 
             override fun onEvent(arg0: Int, arg1: Bundle?) {
@@ -136,12 +137,12 @@ class MicFragment : Fragment() {
                 val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 var text = ""
                 for (result in matches!!) text += """$result""".trimIndent()
-                sourceText.setText(text)
+                binding.sourceText.setText(text)
             }
             override fun onRmsChanged(rmsdB: Float) {
                 Log.i(LOG_TAG, "onRmsChanged: $rmsdB")
 
-                progressBar1.setProgress(rmsdB.toInt())
+                binding.progressBar1.setProgress(rmsdB.toInt())
             }
 
             fun getErrorText(errorCode: Int): String {

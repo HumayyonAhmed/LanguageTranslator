@@ -8,6 +8,7 @@ import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import android.speech.tts.Voice
 import android.text.Editable
 import android.text.TextWatcher
@@ -20,32 +21,29 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.CompoundButton
 import android.widget.TextView
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.android.synthetic.main.communicate_fragment.*
-import kotlinx.android.synthetic.main.communicate_fragment.buttonSwitchLang
-import kotlinx.android.synthetic.main.communicate_fragment.sourceLangSelector
-import kotlinx.android.synthetic.main.communicate_fragment.sourceText
-import kotlinx.android.synthetic.main.communicate_fragment.targetLangSelector
-import kotlinx.android.synthetic.main.communicate_fragment.targetText
-import kotlinx.android.synthetic.main.communicate_fragment.toggleButton1
-import kotlinx.android.synthetic.main.toolbar.*
+import com.languagetranslator.translate.databinding.CameraFragmentBinding
+import com.languagetranslator.translate.databinding.CommunicateFragmentBinding
 import java.util.*
 
 /***
  * Fragment view for handling translations
  */
 class CommunicateFragment : Fragment() {
+    private var _binding: CommunicateFragmentBinding? = null
+    private val binding get() = _binding!!
     private lateinit var tts: TextToSpeech
-    val handler = Handler()
     private val LOG_TAG = "VoiceRecognitionAct"
     private val speechRecognizer by lazy { SpeechRecognizer.createSpeechRecognizer(requireActivity()) }
     private lateinit var recognizerIntent: Intent
-    var audioPath = ""
+    private lateinit var recognizerIntent2: Intent
     private lateinit var srcLang: String
     private lateinit var targetLang: String
     private var srcInput: Boolean = false
     private var targetInput: Boolean = false
+    private lateinit var viewModel:TranslateViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +55,8 @@ class CommunicateFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        return inflater.inflate(R.layout.communicate_fragment, container, false)
+        _binding = CommunicateFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -66,9 +65,7 @@ class CommunicateFragment : Fragment() {
 
         activity?.findViewById<TextView>(R.id.title)?.text = "Communicate"
         activity?.findViewById<BottomNavigationView>(R.id.nav)?.visibility  = View.VISIBLE
-        val viewModel = ViewModelProviders.of(this).get(
-            TranslateViewModel::class.java
-        )
+        viewModel = ViewModelProvider(this)[TranslateViewModel::class.java]
         val adapter = ArrayAdapter(
             requireActivity(),
             R.layout.spinner_layout, viewModel.availableLanguages
@@ -82,165 +79,104 @@ class CommunicateFragment : Fragment() {
             }
         })
 
-        sourceLangSelector.adapter = adapter
-        targetLangSelector.adapter = adapter
-        sourceLangSelector.setSelection(adapter.getPosition(TranslateViewModel.Language("ur")))
-        targetLangSelector.setSelection(adapter.getPosition(TranslateViewModel.Language("ar")))
-        srcLang = adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0,2)
-        targetLang = adapter.getItem(targetLangSelector.selectedItemPosition).toString().substring(0,2)
-        recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0,2))
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
-        }
-        toggleButton1.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
+        binding.sourceLangSelector.adapter = adapter
+        binding.targetLangSelector.adapter = adapter
+        binding.sourceLangSelector.setSelection(adapter.getPosition(TranslateViewModel.Language("ur")))
+        binding.targetLangSelector.setSelection(adapter.getPosition(TranslateViewModel.Language("ar")))
+        srcLang = adapter.getItem(binding.sourceLangSelector.selectedItemPosition).toString().substring(0,2)
+        targetLang = adapter.getItem(binding.targetLangSelector.selectedItemPosition).toString().substring(0,2)
+        binding.toggleButton1.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
             override fun onCheckedChanged(
                 buttonView: CompoundButton?,
                 isChecked: Boolean
             ) {
                 srcInput = true
-                targetInput = false
-                srcLang = adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0,2)
-                targetLang = adapter.getItem(targetLangSelector.selectedItemPosition).toString().substring(0,2)
-                recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                    putExtra(RecognizerIntent.EXTRA_LANGUAGE, adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0,2))
-                    putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-                    putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
-                }
+                srcLang = adapter.getItem(binding.sourceLangSelector.selectedItemPosition).toString().substring(0,2)
+                targetLang = adapter.getItem(binding.targetLangSelector.selectedItemPosition).toString().substring(0,2)
                 if (isChecked) {
+                    binding.waves.setVisibility(View.VISIBLE)
                     speechRecognizer.startListening(recognizerIntent)
                 } else {
+                    binding.waves.setVisibility(View.GONE)
                     speechRecognizer.stopListening()
                 }
             }
         })
-        toggleButton2.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
-            override fun onCheckedChanged(
-                buttonView: CompoundButton?,
-                isChecked: Boolean
-            ) {
-                srcInput = false
-                targetInput = true
-                srcLang = adapter.getItem(targetLangSelector.selectedItemPosition).toString().substring(0,2)
-                targetLang = adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0,2)
-                recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                    putExtra(RecognizerIntent.EXTRA_LANGUAGE, adapter.getItem(targetLangSelector.selectedItemPosition).toString().substring(0,2))
-                    putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-                    putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
-                }
-                if (isChecked) {
-                    speechRecognizer.startListening(recognizerIntent)
-                } else {
-                    speechRecognizer.stopListening()
-                }
-            }
-        })
-        sourceLangSelector.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding.sourceLangSelector.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
                 position: Int,
                 id: Long,
             ) {
-//                setProgressText(targetText)
+//                setProgressText(binding.targetText)
                 viewModel.sourceLang.setValue(adapter.getItem(position))
                 recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                    putExtra(RecognizerIntent.EXTRA_LANGUAGE, adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0,2))
+                    putExtra(RecognizerIntent.EXTRA_LANGUAGE, adapter.getItem(binding.sourceLangSelector.selectedItemPosition).toString().substring(0,2))
                     putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
                     putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
                 }
-                srcLang = adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0,2)
-                targetLang = adapter.getItem(targetLangSelector.selectedItemPosition).toString().substring(0,2)
+                srcLang = adapter.getItem(binding.sourceLangSelector.selectedItemPosition).toString().substring(0,2)
+                targetLang = adapter.getItem(binding.targetLangSelector.selectedItemPosition).toString().substring(0,2)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                targetText.setText("")
+                binding.targetText.setText("")
             }
         }
-        targetLangSelector.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding.targetLangSelector.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
                 position: Int,
                 id: Long,
             ) {
-                setProgressText(targetText)
+                setProgressText(binding.targetText)
                 viewModel.targetLang.setValue(adapter.getItem(position))
                 recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                    putExtra(RecognizerIntent.EXTRA_LANGUAGE, adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0,2))
+                    putExtra(RecognizerIntent.EXTRA_LANGUAGE, adapter.getItem(binding.sourceLangSelector.selectedItemPosition).toString().substring(0,2))
                     putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
                     putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
                 }
-                srcLang = adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0,2)
-                targetLang = adapter.getItem(targetLangSelector.selectedItemPosition).toString().substring(0,2)
+                srcLang = adapter.getItem(binding.sourceLangSelector.selectedItemPosition).toString().substring(0,2)
+                targetLang = adapter.getItem(binding.targetLangSelector.selectedItemPosition).toString().substring(0,2)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                targetText.setText("")
+                binding.targetText.setText("")
             }
         }
-        buttonSwitchLang.setOnClickListener {
-            val targetTxt = targetText.text.toString()
-            setProgressText(targetText)
-            val sourceLangPosition = sourceLangSelector.selectedItemPosition
-            sourceLangSelector.setSelection(targetLangSelector.selectedItemPosition)
-            targetLangSelector.setSelection(sourceLangPosition)
+        binding.buttonSwitchLang.setOnClickListener {
+            val targetTxt = binding.targetText.text.toString()
+            setProgressText(binding.targetText)
+            val sourceLangPosition = binding.sourceLangSelector.selectedItemPosition
+            binding.sourceLangSelector.setSelection(binding.targetLangSelector.selectedItemPosition)
+            binding.targetLangSelector.setSelection(sourceLangPosition)
 
-            // Also update srcTextView with targetText
-            sourceText.setText(targetTxt)
+            // Also update srcTextView with binding.targetText
+            binding.sourceText.setText(targetTxt)
             viewModel.sourceText.setValue(targetTxt)
             recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                putExtra(RecognizerIntent.EXTRA_LANGUAGE, adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0,2))
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE, adapter.getItem(binding.sourceLangSelector.selectedItemPosition).toString().substring(0,2))
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
                 putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
             }
-            srcLang = adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0,2)
-            targetLang = adapter.getItem(targetLangSelector.selectedItemPosition).toString().substring(0,2)
+            srcLang = adapter.getItem(binding.sourceLangSelector.selectedItemPosition).toString().substring(0,2)
+            targetLang = adapter.getItem(binding.targetLangSelector.selectedItemPosition).toString().substring(0,2)
         }
-        sourceText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable) {
-//                setProgressText(targetText)
-                viewModel.sourceText.postValue(s.toString())
-            }
-        })
-        targetText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable) {
-//                setProgressText(sourceText)
-                viewModel.sourceText.postValue(s.toString())
-            }
-        })
         viewModel.translatedText.observe(
             viewLifecycleOwner
         ) { resultOrError ->
             if (resultOrError.error != null) {
-                sourceText.error = resultOrError.error!!.localizedMessage
+                binding.sourceText.error = resultOrError.error!!.localizedMessage
             } else {
-                if(srcInput && !targetInput) {
-                    targetText.setText(resultOrError.result)
-                    speak(resultOrError.result + "", targetLang)
-                }
-                else {
-                    sourceText.setText(resultOrError.result)
-                    speak(resultOrError.result + "", srcLang)
-                }
+                binding.targetText.setText(resultOrError.result)
+                speak(resultOrError.result + "", targetLang)
             }
         }
-        // Update sync toggle button states based on downloaded models list.
-        viewModel.availableModels.observe(
-            viewLifecycleOwner
-        ) { translateRemoteModels ->
-            val output = requireActivity().getString(
-                R.string.downloaded_models_label,
-                translateRemoteModels
-            )
-        }
+
     }
-    fun startSpeechRecognition() {
-//        speechRecognizer.startListening(recognizerIntent)
+    private fun startSpeechRecognition() {
         speechRecognizer.setRecognitionListener(object : RecognitionListener {
             fun onResume(){
                 this.onResume()
@@ -255,7 +191,7 @@ class CommunicateFragment : Fragment() {
 
             override fun onBeginningOfSpeech() {
                 Log.i(LOG_TAG, "onBeginningOfSpeech")
-                sourceText.setText("Listening...")
+                binding.sourceText.setText("Listening...")
             }
 
             override fun onBufferReceived(buffer: ByteArray) {
@@ -264,14 +200,14 @@ class CommunicateFragment : Fragment() {
 
             override fun onEndOfSpeech() {
                 Log.i(LOG_TAG, "onEndOfSpeech")
-                toggleButton1.setChecked(false)
+                binding.toggleButton1.setChecked(false)
             }
 
             override fun onError(errorCode: Int) {
                 val errorMessage = getErrorText(errorCode)
                 Log.d(LOG_TAG, "FAILED $errorMessage")
-                sourceText.setText("")
-                toggleButton1.setChecked(false)
+                binding.sourceText.setText("")
+                binding.toggleButton1.setChecked(false)
             }
 
             override fun onEvent(arg0: Int, arg1: Bundle?) {
@@ -291,10 +227,8 @@ class CommunicateFragment : Fragment() {
                 val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 var text = ""
                 for (result in matches!!) text += """$result""".trimIndent()
-                if (srcInput && !targetInput)
-                    sourceText.setText(text)
-                else
-                    targetText.setText(text)
+                binding.sourceText.setText(text)
+                viewModel.sourceText.postValue(text)
             }
             override fun onRmsChanged(rmsdB: Float) {
                 Log.i(LOG_TAG, "onRmsChanged: $rmsdB")

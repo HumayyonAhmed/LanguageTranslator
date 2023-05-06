@@ -19,6 +19,7 @@ import HistoryData
 import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
@@ -44,15 +45,15 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import kotlinx.android.synthetic.main.activity_translate_main.*
-import kotlinx.android.synthetic.main.toolbar.*
-import kotlinx.android.synthetic.main.translate_fragment.*
+import com.languagetranslator.translate.databinding.CameraFragmentBinding
+import com.languagetranslator.translate.databinding.TranslateFragmentBinding
 import java.io.File
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 import java.util.*
 
 
@@ -60,6 +61,9 @@ import java.util.*
  * Fragment view for handling translations
  */
 class TranslateFragment : Fragment() {
+  private var _binding: TranslateFragmentBinding? = null
+  private val binding get() = _binding!!
+
   private lateinit var tts: TextToSpeech
   val handler = Handler()
   private val LOG_TAG = "VoiceRecognitionAct"
@@ -77,7 +81,8 @@ class TranslateFragment : Fragment() {
     container: ViewGroup?,
     savedInstanceState: Bundle?,
   ): View? {
-    return inflater.inflate(R.layout.translate_fragment, container, false)
+    _binding = TranslateFragmentBinding.inflate(inflater, container, false)
+    return binding.root
   }
 
   @SuppressLint("ClickableViewAccessibility")
@@ -85,21 +90,19 @@ class TranslateFragment : Fragment() {
     super.onViewCreated(view, savedInstanceState)
     startSpeechRecognition()
 
-    targetText.movementMethod = ScrollingMovementMethod()
+    binding.targetText.movementMethod = ScrollingMovementMethod()
     if (arguments?.getBoolean(MIC_INPUT.toString()) == true) {
       activity?.findViewById<TextView>(R.id.title)?.text = "Voice Input"
-      toggleButton1.visibility = View.VISIBLE
-      outputText.visibility = View.GONE
+      binding.toggleButton1.visibility = View.VISIBLE
+      binding.outputText.visibility = View.GONE
     } else {
       activity?.findViewById<TextView>(R.id.title)?.text = "Welcome"
-      waves.visibility = View.GONE
-      toggleButton1.visibility = View.GONE
-      outputText.visibility = View.VISIBLE
+      binding.waves.visibility = View.GONE
+      binding.toggleButton1.visibility = View.GONE
+      binding.outputText.visibility = View.VISIBLE
     }
     activity?.findViewById<BottomNavigationView>(R.id.nav)?.visibility = View.VISIBLE
     val switchButton = view.findViewById<Button>(R.id.buttonSwitchLang)
-//    val sourceSyncButton = view.findViewById<ToggleButton>(R.id.buttonSyncSource)
-//    val targetSyncButton = view.findViewById<ToggleButton>(R.id.buttonSyncTarget)
     val srcTextView: TextInputEditText = view.findViewById(R.id.sourceText)
     val targetTextView = view.findViewById<TextView>(R.id.targetText)
     val downloadedModelsTextView = view.findViewById<TextView>(R.id.downloadedModels)
@@ -141,16 +144,16 @@ class TranslateFragment : Fragment() {
       putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
     }
 
-    toggleButton1.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
+    binding.toggleButton1.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
       override fun onCheckedChanged(
         buttonView: CompoundButton?,
         isChecked: Boolean
       ) {
         if (isChecked) {
-          waves.setVisibility(View.VISIBLE)
+          binding.waves.setVisibility(View.VISIBLE)
           speechRecognizer.startListening(recognizerIntent)
         } else {
-          waves.setVisibility(View.GONE)
+          binding.waves.setVisibility(View.GONE)
           speechRecognizer.stopListening()
         }
       }
@@ -239,31 +242,33 @@ class TranslateFragment : Fragment() {
 //        viewModel.deleteLanguage(language!!)
 //      }
 //    }
-    favBtn.setOnClickListener {
+    binding.favBtn.setOnClickListener {
+      val account = GoogleSignIn.getLastSignedInAccount(context)
+      val googleId = account?.id
       val database =
         FirebaseDatabase.getInstance("https://languagetranslator-a722c-default-rtdb.firebaseio.com/")
-      val ref = database.getReference("user/history")
+      val ref = database.getReference("users/${googleId}/history")
       val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
       val favoriteTranslation = HistoryData(
         adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0, 2)
           .lowercase(Locale.ROOT),
         adapter.getItem(targetLangSelector.selectedItemPosition).toString().substring(0, 2)
           .lowercase(Locale.ROOT),
-        sourceText.text.toString(), targetTextView.text.toString(), sdf.format(Date()), true
+        binding.sourceText.text.toString(), targetTextView.text.toString(), sdf.format(Date()), true
       )
       ref.push().setValue(favoriteTranslation)
       Toast.makeText(requireContext(), "Added to Favourites", Toast.LENGTH_SHORT).show()
     }
-    pauseBtn.setOnClickListener {
-      if (sourceText.text.toString() != "") {
-        pauseBtn.visibility = View.GONE
+    binding.pauseBtn.setOnClickListener {
+      if (binding.sourceText.text.toString() != "") {
+        binding.pauseBtn.visibility = View.GONE
         speakButton.visibility = View.VISIBLE
       }
       tts.stop()
     }
     speakButton.setOnClickListener {
-      if (sourceText.text.toString() != "") {
-        pauseBtn.visibility = View.VISIBLE
+      if (binding.sourceText.text.toString() != "") {
+        binding.pauseBtn.visibility = View.VISIBLE
         speakButton.visibility = View.GONE
       }
 
@@ -282,13 +287,29 @@ class TranslateFragment : Fragment() {
       }
     }
     shareButton.setOnClickListener {
-      if (sourceText.text.toString() != "") {
+      if (binding.sourceText.text.toString() != "") {
         activity?.openContextMenu(shareButton)
       }
-
     }
     delButton.setOnClickListener {
-      sourceText.text?.clear()
+      if (srcTextView.text.toString() != "" || srcTextView.text != null) {
+        val account = GoogleSignIn.getLastSignedInAccount(context)
+        val googleId = account?.id
+        FirebaseDatabase.getInstance("https://languagetranslator-a722c-default-rtdb.firebaseio.com/").setPersistenceEnabled(true)
+        val database =
+          FirebaseDatabase.getInstance("https://languagetranslator-a722c-default-rtdb.firebaseio.com/")
+        val ref = database.getReference("users/${googleId}/history")
+        val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+        val favoriteTranslation = HistoryData(
+          adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0, 2)
+            .lowercase(Locale.ROOT),
+          adapter.getItem(targetLangSelector.selectedItemPosition).toString().substring(0, 2)
+            .lowercase(Locale.ROOT),
+          binding.sourceText.text.toString(), targetTextView.text.toString(), sdf.format(Date()), false
+        )
+        ref.push().setValue(favoriteTranslation)
+      }
+      binding.sourceText.text?.clear()
     }
     tts.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
       override fun onStart(utteranceId: String) {}
@@ -296,10 +317,11 @@ class TranslateFragment : Fragment() {
       override fun onDone(utteranceId: String) {
         handler.post {
           speakButton.visibility = View.VISIBLE
-          pauseBtn.visibility = View.GONE
+          binding.pauseBtn.visibility = View.GONE
         }
       }
 
+      @Deprecated("Deprecated in Java")
       override fun onError(p0: String?) {
         TODO("Not yet implemented")
       }
@@ -315,9 +337,9 @@ class TranslateFragment : Fragment() {
       override fun afterTextChanged(s: Editable) {
         if (arguments?.getBoolean(MIC_INPUT.toString()) == true) {
           if (s.toString().trim() != "") {
-            outputText.visibility = View.VISIBLE
+            binding.outputText.visibility = View.VISIBLE
           } else {
-            outputText.visibility = View.GONE
+            binding.outputText.visibility = View.GONE
           }
         }
         setProgressText(targetTextView)
@@ -325,15 +347,14 @@ class TranslateFragment : Fragment() {
       }
     })
     viewModel.translatedText.observe(
-      viewLifecycleOwner,
-      { resultOrError ->
-        if (resultOrError.error != null) {
-          srcTextView.setError(resultOrError.error!!.localizedMessage)
-        } else {
-          targetTextView.text = resultOrError.result
-        }
+      viewLifecycleOwner
+    ) { resultOrError ->
+      if (resultOrError.error != null) {
+        srcTextView.error = resultOrError.error!!.localizedMessage
+      } else {
+        targetTextView.text = resultOrError.result
       }
-    )
+    }
 
     // Update sync toggle button states based on downloaded models list.
     viewModel.availableModels.observe(
@@ -367,6 +388,11 @@ class TranslateFragment : Fragment() {
         srcTextView.setText(txt)
       }
     }
+
+    if(MainActivity.sourceLang!=null && MainActivity.targetLang!=null){
+      sourceLangSelector.setSelection(adapter.getPosition(TranslateViewModel.Language(MainActivity.sourceLang!!)))
+      targetLangSelector.setSelection(adapter.getPosition(TranslateViewModel.Language(MainActivity.targetLang!!)))
+    }
   }
 
   override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenu.ContextMenuInfo?) {
@@ -389,18 +415,17 @@ class TranslateFragment : Fragment() {
   }
 
   private fun shareAsText() {
-      if(targetText.text.toString()!="") {
+      if(binding.targetText.text.toString()!="") {
         val shareIntent = Intent(Intent.ACTION_SEND)
         shareIntent.type = "text/plain"
-        shareIntent.putExtra(Intent.EXTRA_TEXT, targetText.text.toString())
+        shareIntent.putExtra(Intent.EXTRA_TEXT, binding.targetText.text.toString())
         startActivity(Intent.createChooser(shareIntent, "Share using"))
       }
   }
 
   private fun shareAsAudio() {
-
     val file = getAudioFile()
-    tts.synthesizeToFile(targetText.text, null, file, null)
+    tts.synthesizeToFile(binding.targetText.text, null, file, null)
 
     val shareIntent = Intent(Intent.ACTION_SEND)
     shareIntent.type = "audio/*"
@@ -437,7 +462,7 @@ class TranslateFragment : Fragment() {
     audioPath = "file:" + file.absolutePath
     return file
   }
-  fun startSpeechRecognition() {
+  private fun startSpeechRecognition() {
 //        speechRecognizer.startListening(recognizerIntent)
     speechRecognizer.setRecognitionListener(object : RecognitionListener {
       fun onResume(){
@@ -453,7 +478,7 @@ class TranslateFragment : Fragment() {
 
       override fun onBeginningOfSpeech() {
         Log.i(LOG_TAG, "onBeginningOfSpeech")
-        sourceText.setText("Listening...")
+        binding.sourceText.setText("Listening...")
       }
 
       override fun onBufferReceived(buffer: ByteArray) {
@@ -462,14 +487,14 @@ class TranslateFragment : Fragment() {
 
       override fun onEndOfSpeech() {
         Log.i(LOG_TAG, "onEndOfSpeech")
-        toggleButton1.setChecked(false)
+        binding.toggleButton1.setChecked(false)
       }
 
       override fun onError(errorCode: Int) {
         val errorMessage = getErrorText(errorCode)
         Log.d(LOG_TAG, "FAILED $errorMessage")
-        sourceText.setText("")
-        toggleButton1.setChecked(false)
+        binding.sourceText.setText("")
+        binding.toggleButton1.setChecked(false)
       }
 
       override fun onEvent(arg0: Int, arg1: Bundle?) {
@@ -489,7 +514,7 @@ class TranslateFragment : Fragment() {
         val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
         var text = ""
         for (result in matches!!) text += """$result""".trimIndent()
-        sourceText.setText(text)
+        binding.sourceText.setText(text)
       }
       override fun onRmsChanged(rmsdB: Float) {
         Log.i(LOG_TAG, "onRmsChanged: $rmsdB")
@@ -513,8 +538,7 @@ class TranslateFragment : Fragment() {
       }
     })
   }
-
-  fun speak(text: String, lang: String) {
+  private fun speak(text: String, lang: String) {
     // Set the language
     val result = tts.setLanguage(Locale(lang))
     if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
@@ -542,8 +566,8 @@ class TranslateFragment : Fragment() {
   }
 
   companion object {
-    val SRC_LANG = null
-    val TAR_LANG = null
+    var SRC_LANG: String? = null
+    var TAR_LANG: String? = null
     val INPUT_STRING = null
     const val MIC_INPUT = false
     fun newInstance(): TranslateFragment {

@@ -33,7 +33,7 @@ class HistoryAdapter(options: FirebaseRecyclerOptions<HistoryData>) :
             translatedTextView.text = favorite.translatedTxt
 
             deleteButton.setOnClickListener {
-                getRef(adapterPosition).removeValue()
+                getRef(bindingAdapterPosition).removeValue()
             }
         }
     }

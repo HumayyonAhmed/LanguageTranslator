@@ -1,34 +1,42 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="@string/messages_header">
-
-        <EditTextPreference
-            app:key="signature"
-            app:title="@string/signature_title"
-            app:useSimpleSummaryProvider="true" />
+    <PreferenceCategory app:title="Default Settings" >
 
         <ListPreference
-            app:defaultValue="reply"
+            app:defaultValue="ur"
             app:entries="@array/reply_entries"
             app:entryValues="@array/reply_values"
-            app:key="reply"
-            app:title="@string/reply_title"
+            app:key="defaultSourceLang"
+            app:title="Source Language"
+            app:useSimpleSummaryProvider="true" />
+        <ListPreference
+            app:defaultValue="ar"
+            app:entries="@array/reply_entries"
+            app:entryValues="@array/reply_values"
+            app:key="defaultTargetLang"
+            app:title="Target Language"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/sync_header">
+    <PreferenceCategory app:title="Downloaded Models">
 
         <SwitchPreferenceCompat
-            app:key="sync"
-            app:title="@string/sync_title" />
-
+            app:key="ur"
+            app:summaryOn="Downloaded"
+            app:summaryOff="Not Downloaded"
+            app:title="Urdu" />
         <SwitchPreferenceCompat
-            app:dependency="sync"
-            app:key="attachment"
-            app:summaryOff="@string/attachment_summary_off"
-            app:summaryOn="@string/attachment_summary_on"
-            app:title="@string/attachment_title" />
+            app:key="ar"
+            app:summary="Downloaded"
+            app:summaryOff="Not Downloaded"
+            app:title="Arabic" />
+        <SwitchPreferenceCompat
+            app:enabled="false"
+            app:key="en"
+            app:summaryOn="Downloaded"
+            app:summaryOff="Not Downloaded"
+            app:title="English" />
 
     </PreferenceCategory>
 
