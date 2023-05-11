@@ -1,6 +1,8 @@
 package com.languagetranslator.translate
 
 import android.annotation.SuppressLint
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -21,6 +23,8 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.CompoundButton
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -163,6 +167,57 @@ class CommunicateFragment : Fragment() {
             }
             srcLang = adapter.getItem(binding.sourceLangSelector.selectedItemPosition).toString().substring(0,2)
             targetLang = adapter.getItem(binding.targetLangSelector.selectedItemPosition).toString().substring(0,2)
+        }
+
+        binding.speakBtn1.setOnClickListener {
+            if (binding.sourceText.text.toString() != "") {
+                binding.speakBtn1.visibility = View.GONE
+            }
+
+            val lang =
+                adapter.getItem(binding.sourceLangSelector.selectedItemPosition).toString().substring(0, 2);
+            val text = binding.sourceText.text.toString()
+            speak(text, lang)
+                binding.speakBtn1.visibility = View.VISIBLE
+        }
+        binding.speakBtn2.setOnClickListener {
+            if (binding.targetText.text.toString() != "") {
+                binding.speakBtn2.visibility = View.GONE
+            }
+
+            val lang =
+                adapter.getItem(binding.targetLangSelector.selectedItemPosition).toString().substring(0, 2);
+            val text = binding.targetText.text.toString()
+            speak(text, lang)
+            binding.speakBtn2.visibility = View.VISIBLE
+        }
+        binding.copyBtn1.setOnClickListener {
+            if (binding.sourceText.text.toString() != "") {
+                val clipboard =
+                    ContextCompat.getSystemService(
+                        requireContext(),
+                        ClipboardManager::class.java
+                    ) as ClipboardManager?
+                val clip = ClipData.newPlainText("translated text", binding.sourceText.text.toString())
+                clipboard!!.setPrimaryClip(clip)
+                Toast.makeText(requireContext(), "Text copied to clipboard!", Toast.LENGTH_SHORT).show()
+            }
+        }
+        binding.copyBtn2.setOnClickListener {
+            if (binding.targetText.text.toString() != "") {
+                val clipboard =
+                    ContextCompat.getSystemService(
+                        requireContext(),
+                        ClipboardManager::class.java
+                    ) as ClipboardManager?
+                val clip = ClipData.newPlainText("translated text", binding.targetText.text.toString())
+                clipboard!!.setPrimaryClip(clip)
+                Toast.makeText(requireContext(), "Text copied to clipboard!", Toast.LENGTH_SHORT).show()
+            }
+        }
+        binding.delBtn1.setOnClickListener {
+            binding.sourceText.setText("")
+            binding.targetText.setText("")
         }
         viewModel.translatedText.observe(
             viewLifecycleOwner

@@ -6,29 +6,107 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1">
 
     <TextView
         android:id="@+id/sourceText"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/textoutput"
+        android:gravity="top"
+        android:hint="Say Something"
+        android:scrollbars="vertical"
+        android:textColor="@android:color/primary_text_light"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/actions1"
+        app:layout_constraintTop_toTopOf="parent" />
+    <LinearLayout
+        android:id="@+id/actions1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:orientation="vertical"
+        android:background="#fff"
+        android:gravity="top">
+        <ImageButton
+            android:id="@+id/speakBtn1"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/ic_baseline_volume_up_24"
+            />
+        <ImageButton
+            android:id="@+id/copyBtn1"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_baseline_content_copy_24"
+            />
+        <ImageButton
+            android:id="@+id/delBtn1"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_baseline_delete_outline_24"
+            />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:textSize="18sp"
-        android:textColor="@android:color/primary_text_light"
-        android:gravity="top"
-        android:layout_weight="1"
-        android:scrollbars="vertical"
-        android:background="@drawable/textoutput"
-        android:hint="Say Something"/>
-
+        android:layout_weight="1">
     <TextView
         android:id="@+id/targetText"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
         android:textSize="18sp"
         android:textColor="@android:color/primary_text_light"
         android:gravity="top"
         android:layout_weight="1"
         android:background="@drawable/textoutput"
-        android:hint="Say Something"/>
+        android:hint="Say Something"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/actions2"
+        app:layout_constraintTop_toTopOf="parent" />
+    <LinearLayout
+        android:id="@+id/actions2"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="#fff"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:orientation="vertical"
+        android:gravity="top">
+        <ImageButton
+            android:id="@+id/speakBtn2"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginTop="0dp"
+            android:src="@drawable/ic_baseline_volume_up_24"
+            />
+        <ImageButton
+            android:id="@+id/copyBtn2"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_baseline_content_copy_24"
+            />
+    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="130dp"
