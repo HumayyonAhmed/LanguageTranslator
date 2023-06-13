@@ -20,6 +20,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -90,7 +91,12 @@ class CameraFragment : Fragment() {
         startActivityForResult(intent, GALLERY_REQUEST_CODE)
     }
     private fun openCropActivity(sourceUri: Uri, destinationUri: Uri) {
+        val options = UCrop.Options()
+        options.setToolbarColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
+        options.setStatusBarColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
+        options.setActiveWidgetColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
         UCrop.of(sourceUri, destinationUri)
+            .withOptions(options)
             .withMaxResultSize(maxWidth, maxHeight)
             .start(requireContext(), this)
     }

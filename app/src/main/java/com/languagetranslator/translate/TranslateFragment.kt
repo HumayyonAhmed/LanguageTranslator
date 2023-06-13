@@ -286,6 +286,31 @@ class TranslateFragment : Fragment() {
         Toast.makeText(requireContext(), "Text copied to clipboard!", Toast.LENGTH_SHORT).show()
       }
     }
+//    srcTextView.onFocusChangeListener{view, hasFocus->
+//      if(hasFocus)
+//      {
+//      if (srcTextView.text.toString() != "" || srcTextView.text != null) {
+//        val account = GoogleSignIn.getLastSignedInAccount(context)
+//        val googleId = account?.id
+//        FirebaseDatabase.getInstance("https://languagetranslator-a722c-default-rtdb.firebaseio.com/")
+//          .setPersistenceEnabled(true)
+//        val database =
+//          FirebaseDatabase.getInstance("https://languagetranslator-a722c-default-rtdb.firebaseio.com/")
+//        val ref = database.getReference("users/${googleId}/history")
+//        val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+//        val favoriteTranslation = HistoryData(
+//          adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0, 2)
+//            .lowercase(Locale.ROOT),
+//          adapter.getItem(targetLangSelector.selectedItemPosition).toString().substring(0, 2)
+//            .lowercase(Locale.ROOT),
+//          binding.sourceText.text.toString(),
+//          targetTextView.text.toString(),
+//          sdf.format(Date()),
+//          false
+//        )
+//        ref.push().setValue(favoriteTranslation)
+//      }
+//    }
     shareButton.setOnClickListener {
       if (binding.sourceText.text.toString() != "") {
         activity?.openContextMenu(shareButton)
@@ -293,21 +318,6 @@ class TranslateFragment : Fragment() {
     }
     delButton.setOnClickListener {
       if (srcTextView.text.toString() != "" || srcTextView.text != null) {
-        val account = GoogleSignIn.getLastSignedInAccount(context)
-        val googleId = account?.id
-        FirebaseDatabase.getInstance("https://languagetranslator-a722c-default-rtdb.firebaseio.com/").setPersistenceEnabled(true)
-        val database =
-          FirebaseDatabase.getInstance("https://languagetranslator-a722c-default-rtdb.firebaseio.com/")
-        val ref = database.getReference("users/${googleId}/history")
-        val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
-        val favoriteTranslation = HistoryData(
-          adapter.getItem(sourceLangSelector.selectedItemPosition).toString().substring(0, 2)
-            .lowercase(Locale.ROOT),
-          adapter.getItem(targetLangSelector.selectedItemPosition).toString().substring(0, 2)
-            .lowercase(Locale.ROOT),
-          binding.sourceText.text.toString(), targetTextView.text.toString(), sdf.format(Date()), false
-        )
-        ref.push().setValue(favoriteTranslation)
       }
       binding.sourceText.text?.clear()
     }

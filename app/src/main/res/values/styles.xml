@@ -8,6 +8,10 @@
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     <item name="colorAccent">@color/colorPrimary</item>
   </style>
+  <style name="ucrop_UCropView">
+    <item name="ucrop_frame_color">@color/colorPrimary</item>
+    <item name="ucrop_dimmed_color">@color/colorPrimary</item>
+  </style>
   <style name="IconOnlyButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
     <item name="iconPadding">0dp</item>
     <item name="iconGravity">textStart</item>
